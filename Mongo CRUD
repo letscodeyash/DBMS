@@ -1,0 +1,51 @@
+// Creating Teachers collection
+db.createCollection("Teachers");
+
+// Creating Students collection
+db.createCollection("Students");
+
+// Inserting sample data into Teachers collection
+db.Teachers.insertMany([
+    {Tname: "John", dno: 101, dname: "Computer", experience: 5, salary: 12000, date_of_joining: "2020-01-01"},
+    {Tname: "Jane", dno: 102, dname: "IT", experience: 8, salary: 15000, date_of_joining: "2018-05-15"},
+    {Tname: "Praveen", dno: 103, dname: "E&TC", experience: 6, salary: 11000, date_of_joining: "2019-03-20"}
+]);
+
+// Inserting sample data into Students collection
+db.Students.insertMany([
+    {Sname: "Alice", roll_no: 1, class: "A"},
+    {Sname: "Bob", roll_no: 2, class: "B"},
+    {Sname: "xyz", roll_no: 3, class: "C"}
+]);
+
+
+// 1. Find the information about all teachers alphabetically.
+db.Teachers.find().sort({Tname: 1});
+
+// 2. Find the information about all teachers of the computer department
+db.Teachers.find({dname: "Computer"});
+
+// 3. Find the information about all teachers of computer, IT, and E&TC department
+db.Teachers.find({dname: {$in: ["Computer", "IT", "E&TC"]}});
+
+// 4. Find the information about all teachers of computer, IT, and E&TC department having salary greater than or equal to 10000/-
+db.Teachers.find({dname: {$in: ["Computer", "IT", "E&TC"]}, salary: {$gte: 10000}});
+
+// 6. Find the student information having roll_no = 2 or Sname=xyz
+db.Students.find({$or: [{roll_no: 2}, {Sname: "xyz"}]});
+
+// 7. Update the experience of teacher 'Praveen' to 10 years, if the entry is not available in the database, consider the entry as a new entry.
+db.Teachers.updateOne({Tname: "Praveen"}, {$set: {experience: 10}}, {upsert: true});
+
+// 9. Update the department of all the teachers working in the IT department to 'COMP'
+db.Teachers.updateMany({dname: "IT"}, {$set: {dname: "COMP"}});
+
+// 10. Find the teacher's name and their experience from the teachers' collection
+db.Teachers.find({}, {Tname: 1, experience: 1});
+
+// 11. Delete all the documents from the teacher's collection having 'IT' dept.
+db.Teachers.deleteMany({dname: "IT"});
+
+// 12. Display with pretty() method the first 3 documents in the teacher's collection in ascending order.
+db.Teachers.find().sort({Tname: 1}).limit(3).pretty();
+
