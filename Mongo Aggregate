@@ -1,0 +1,66 @@
+1)
+
+db.books.aggregate([
+    {
+        $group: {
+            _id: null,
+            averagePrice: { $avg: "$price" }
+        }
+    }
+])
+
+2)
+
+db.books.aggregate([
+    {
+        $group: {
+            _id: "$genre",
+            count: { $sum: 1 }
+        }
+    }
+])
+
+
+3)
+
+db.books.aggregate([
+    {
+        $group: {
+            _id: "$genre",
+            maxPrice: { $max: "$price" },
+            book: { $first: "$$ROOT" }
+        }
+    }
+])
+
+
+4)
+
+
+db.books.aggregate([
+    {
+        $group: {
+            _id: "$author",
+            count: { $sum: 1 }
+        }
+    },
+    {
+        $sort: { count: -1 }
+    },
+    { $limit: 1 }
+])
+
+
+5)
+
+db.books.find().sort({ published_date: -1 })
+
+6)
+db.books.find().sort({ price: 1 })
+
+7)
+db.books.createIndex({ "title": 1 })
+
+// Describe the index
+db.books.getIndexes()
+
