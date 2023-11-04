@@ -1,0 +1,76 @@
+mysql> use khedkar;
+Database changed
+mysql> create table stud_marks(name varchar(20),total_marks int);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create table result(roll_no int AUTO_INCREMENT,name varchar(20),class varchar(20),PRIMARY KEY(roll_no));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> desc stud_marks;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| name        | varchar(20) | YES  |     | NULL    |       |
+| total_marks | int         | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> desc result;
++---------+-------------+------+-----+---------+----------------+
+| Field   | Type        | Null | Key | Default | Extra          |
++---------+-------------+------+-----+---------+----------------+
+| roll_no | int         | NO   | PRI | NULL    | auto_increment |
+| name    | varchar(20) | YES  |     | NULL    |                |
+| class   | varchar(20) | YES  |     | NULL    |                |
++---------+-------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+mysql> insert into stud_marks values ("yash",74),("ritesh",90),("omkar",79),("pratik",75);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select * from stud_marks;
++--------+-------------+
+| name   | total_marks |
++--------+-------------+
+| yash   |          74 |
+| ritesh |          90 |
+| omkar  |          79 |
+| pratik |          75 |
++--------+-------------+
+4 rows in set (0.00 sec)
+
+mysql> delimiter //
+mysql> create procedure grade()
+    -> begin
+    -> insert into result(name,class)
+    -> select
+    -> name,
+    -> case
+    -> WHEN total_marks>=90 and total_marks<=100 THEN 'dist'
+    -> WHEN total_marks>=80 and total_marks<=89 THEN 'first class'
+    -> WHEN total_marks>=70 and total_marks<=79 THEN 'second class'
+    -> ELSE 'NOT PASS'
+    -> END AS class
+    -> from stud_marks;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call grade();
+    -> //
+Query OK, 4 rows affected (0.01 sec)
+
+mysql> select * from result;
+    -> //
++---------+--------+--------------+
+| roll_no | name   | class        |
++---------+--------+--------------+
+|       1 | yash   | second class |
+|       2 | ritesh | dist         |
+|       3 | omkar  | second class |
+|       4 | pratik | second class |
++---------+--------+--------------+
+4 rows in set (0.00 sec)
+
+mysql>
