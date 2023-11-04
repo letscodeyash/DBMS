@@ -1,0 +1,96 @@
+mysql> use khedkar;
+Database changed
+mysql> create table Fine(roll_no int,Date date,Amount int);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create table Borrower(roll_no int AUTO_INCREMENT,Name
+    -> varchar(50),Date_of_issue date,Book_name varchar(50),Status varchar(10),primary
+    -> key(roll_no));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> insert into
+    -> Borrower(Name,Date_of_issue,Book_name,Status)values
+    -> ("Himanshu",'2023-06-15',"SEPM","Issued"),
+    -> ("Abhay",'2023-08-17',"TOC","Issued"),
+    -> ("Puja",'2023-06-13',"CN","Issued"),
+    -> ("Geta",'2023-08-20',"TOC","Issued"),
+    -> ("Kalyani",'2023-06-24',"ISEM","Issued"),
+    -> ("Kalyani",'2023-06-24',"ISEM","Issued"), ^C
+mysql> insert into
+    -> Borrower(Name,Date_of_issue,Book_name,Status)values
+    -> ("Pooja",'2017-06-15',"SEPM","Issued"),
+    -> ("Himanshu",'2023-06-15',"SEPM","Issued"),
+    -> ("Abhay",'2023-08-17',"TOC","Issued"),
+    -> ("Puja",'2023-06-13',"CN","Issued"),
+    -> ("Geta",'2023-08-20',"TOC","Issued"),
+    -> ("Kalyani",'2023-06-24',"ISEM","Issued"),
+    -> ("Dhanu",'2023-07-23',"ISEM","Issued");
+Query OK, 7 rows affected (0.01 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> select * from Borrower;
++---------+----------+---------------+-----------+--------+
+| roll_no | Name     | Date_of_issue | Book_name | Status |
++---------+----------+---------------+-----------+--------+
+|       1 | Pooja    | 2017-06-15    | SEPM      | Issued |
+|       2 | Himanshu | 2023-06-15    | SEPM      | Issued |
+|       3 | Abhay    | 2023-08-17    | TOC       | Issued |
+|       4 | Puja     | 2023-06-13    | CN        | Issued |
+|       5 | Geta     | 2023-08-20    | TOC       | Issued |
+|       6 | Kalyani  | 2023-06-24    | ISEM      | Issued |
+|       7 | Dhanu    | 2023-07-23    | ISEM      | Issued |
++---------+----------+---------------+-----------+--------+
+7 rows in set (0.00 sec)
+
+mysql>  delimiter $$
+mysql> create procedure studfine(roll int,nm varchar(50))
+    ->  begin
+    ->  declare i_date date;
+    ->  declare diff int;
+    ->  declare fine_amt int;
+    ->  DECLARE EXIT HANDLER FOR SQLEXCEPTION SELECT"Table not found";
+    ->  select Date_of_issue into i_date from Borrower where roll_no=roll and Name=nm;
+    ->  select DATEDIFF(CURDATE(),i_date)into diff;
+    ->  if(diff>=15 and diff<=30)
+    ->  then
+    ->  set fine_amt=diff*5;
+    ->  insert into Fine values(roll,CURDATE(),fine_amt);
+    ->  elseif(diff>30)
+    ->  then
+    ->  set fine_amt=diff*50;
+    ->  insert into Fine values(roll,CURDATE(),fine_amt);
+    ->  end if;
+    ->  update Borrower set Status="Return" where roll_no=roll and Name=nm;
+    ->  end $$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>  call studfine(1,"Pooja")
+    -> $$
+Query OK, 1 row affected (0.01 sec)
+
+mysql> > select * from Borrower;
+    -> select * from Fine;
+    ->  call studfine(3,"Abhay")
+    -> $$
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '> select * from Borrower;
+select * from Fine;
+ call studfine(3,"Abhay")' at line 1
+mysql> > select * from Borrower;
+    ->  ^C
+mysql> select * from Fine;
+    -> ^C
+mysql>  call studfine(3,"Abhay")
+    -> $$
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from Borrower;
+    -> $$
++---------+----------+---------------+-----------+--------+
+| roll_no | Name     | Date_of_issue | Book_name | Status |
++---------+----------+---------------+-----------+--------+
+|       1 | Pooja    | 2017-06-15    | SEPM      | Return |
+|       2 | Himanshu | 2023-06-15    | SEPM      | Issued |
+|       3 | Abhay    | 2023-08-17    | TOC       | Return |
+|       4 | Puja     | 2023-06-13    | CN        | Issued |
+|       5 | Geta     | 2023-08-20    | TOC       | Issued |
+|       6 | Kalyani  | 2023-06-24    |…
