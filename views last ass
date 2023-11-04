@@ -1,0 +1,142 @@
+mysql> create database student;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use student;
+Database changed
+mysql> CREATE TABLE Students (
+    ->     StudentID INT PRIMARY KEY,
+    ->     StudentName VARCHAR(255) NOT NULL,
+    ->     Class VARCHAR(50),
+    ->     Address VARCHAR(255),
+    ->     Grades VARCHAR(10)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> CREATE TABLE EnrolmentDetails (
+    ->     StudentID INT,
+    ->     SubjectName VARCHAR(255),
+    ->     Attendance INT,
+    ->     FOREIGN KEY (StudentID) REFERENCES Students(StudentID)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE VIEW StudentPerformance AS
+    -> SELECT s.StudentID, s.StudentName, s.Class, ed.SubjectName, ed.Attendance, s.Grades
+    -> FROM Students s
+    -> JOIN EnrolmentDetails ed ON s.StudentID = ed.StudentID;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> CREATE VIEW StudentAttendanceSummary AS
+    -> SELECT ed.StudentID, SUM(ed.Attendance) AS TotalAttendance
+    -> FROM EnrolmentDetails ed
+    -> GROUP BY ed.StudentID;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CREATE TABLE SequenceTable (
+    ->     SequenceName VARCHAR(50) PRIMARY KEY,
+    ->     NextValue INT
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> INSERT INTO SequenceTable (SequenceName, NextValue) VALUES ('student_id_sequence', 1);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE GetNextStudentID()
+    -> BEGIN
+    ->     DECLARE nextID INT;
+    ->
+    ->     START TRANSACTION;
+    ->
+    ->     SELECT NextValue INTO nextID FROM SequenceTable WHERE SequenceName = 'student_id_sequence' FOR UPDATE;
+    ->
+    ->     UPDATE SequenceTable SET NextValue = NextValue + 1 WHERE SequenceName = 'student_id_sequence';
+    ->
+    ->     COMMIT;
+    ->
+    ->     SELECT nextID;
+    -> END//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> -- Insert data into Students table
+mysql> INSERT INTO Students (StudentID, StudentName, Class, Address, Grades)
+    -> VALUES (1, 'John Doe', 'Grade 10', '123 Main St, City', 'A');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> INSERT INTO Students (StudentID, StudentName, Class, Address, Grades)
+    -> VALUES (2, 'Jane Smith', 'Grade 11', '456 Elm St, City','B');
+Query OK, 1 row affected (0.00 sec)
+
+mysql> -- Insert data into EnrolmentDetails table
+mysql> INSERT INTO EnrolmentDetails (StudentID, SubjectName, Attendance)
+    -> VALUES (1, 'Math', 90);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> INSERT INTO EnrolmentDetails (StudentID, SubjectName, Attendance)
+    -> VALUES (1, 'Science', 85);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> INSERT INTO EnrolmentDetails (StudentID, SubjectName, Attendance)
+    -> VALUES (2, 'Math', 88);
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> INSERT INTO EnrolmentDetails (StudentID, SubjectName, Attendance)
+    -> VALUES (2, 'Science', 92);
+Query OK, 1 row affected (0.00 sec)
+
+mysql> CREATE INDEX idx_student_name ON Students(StudentName);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Students;
++-----------+-------------+----------+-------------------+--------+
+| StudentID | StudentName | Class    | Address           | Grades |
++-----------+-------------+----------+-------------------+--------+
+|         1 | John Doe    | Grade 10 | 123 Main St, City | A  |
+|         2 | Jane Smith  | Grade 11 | 456 Elm St, City  | B  |
++-----------+-------------+----------+-------------------+--------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM EnrolmentDetails;
++-----------+-------------+------------+
+| StudentID | SubjectName | Attendance |
++-----------+-------------+------------+
+|         1 | Math        |         90 |
+|         1 | Science     |         85 |
+|         2 | Math        |         88 |
+|         2 | Science     |         92 |
++-----------+-------------+------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM StudentPerformance;
++-----------+-------------+----------+-------------+------------+--------+
+| StudentID | StudentName | Class    | SubjectName | Attendance| Grades |
++-----------+-------------+----------+-------------+------------+--------+
+|         1 | John Doe    | Grade 10 | Math        |         90| A      |
+|         1 | John Doe    | Grade 10 | Science     |         85| A      |
+|         2 | Jane Smith  | Grade 11 | Math        |         88| B      |
+|         2 | Jane Smith  | Grade 11 | Science     |         92| B      |
++-----------+-------------+----------+-------------+------------+--------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM StudentAttendanceSummary;
++-----------+-----------------+
+| StudentID | TotalAttendance |
++-----------+-----------------+
+|         1 |             175 |
+|         2 |             180 |
++-----------+-----------------+
+2 rows in set (0.00 sec)
+
+mysql>
