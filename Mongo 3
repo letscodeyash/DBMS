@@ -1,0 +1,23 @@
+db.createCollection("customer");
+db.customer.insertMany([{cid:1,cname:"yash",amount:500,pro_name:"bat"},
+                        {cid:2,cname:"Ram",amount:450,pro_name:"ball"},
+                        {cid:2,cname:"Ram",amount:320,pro_name:"bag"},
+                        {cid:3,cname:"vaishanavi",amount:400,pro_name:"t-shirt"},
+                        {cid:1,cname:"yash",amount:1000,pro_name:"medicine"}
+                       ]);
+var mapFunction=function(){
+    emit(this.cid,this.amount);
+};
+
+var reduceFunction=function(key,value){
+    return Array.sum(values);
+};
+
+db.customer.mapReduce(
+    mapFunction,
+    reduceFunction,{
+        out:"cust_summaray"
+    }
+);
+
+db.cust_summaray.find().forEach(printjson);
