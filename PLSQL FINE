@@ -10,14 +10,6 @@ Query OK, 0 rows affected (0.02 sec)
 
 mysql> insert into
     -> Borrower(Name,Date_of_issue,Book_name,Status)values
-    -> ("Himanshu",'2023-06-15',"SEPM","Issued"),
-    -> ("Abhay",'2023-08-17',"TOC","Issued"),
-    -> ("Puja",'2023-06-13',"CN","Issued"),
-    -> ("Geta",'2023-08-20',"TOC","Issued"),
-    -> ("Kalyani",'2023-06-24',"ISEM","Issued"),
-    -> ("Kalyani",'2023-06-24',"ISEM","Issued"), ^C
-mysql> insert into
-    -> Borrower(Name,Date_of_issue,Book_name,Status)values
     -> ("Pooja",'2017-06-15',"SEPM","Issued"),
     -> ("Himanshu",'2023-06-15',"SEPM","Issued"),
     -> ("Abhay",'2023-08-17',"TOC","Issued"),
